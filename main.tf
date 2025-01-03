@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-west-2"  # Update this based on your region
+  region = "us-west-2"  
 }
 
 # Create a VPC
@@ -11,26 +11,26 @@ resource "aws_vpc" "main_vpc" {
 resource "aws_subnet" "subnet1" {
   vpc_id                  = aws_vpc.main_vpc.id
   cidr_block              = "10.0.1.0/24"
-  availability_zone       = "us-west-2a"  # Update this based on your availability zone
+  availability_zone       = "us-west-2a"  
   map_public_ip_on_launch = true
 }
 
 resource "aws_subnet" "subnet2" {
   vpc_id                  = aws_vpc.main_vpc.id
   cidr_block              = "10.0.2.0/24"
-  availability_zone       = "us-west-2b"  # Update this based on your availability zone
+  availability_zone       = "us-west-2b"  
   map_public_ip_on_launch = true
 }
 
-# Reference to the existing IAM role
+
 data "aws_iam_role" "cluster_role" {
-  name = "eks-cluster-role"  # Reference the existing IAM role by name
+  name = "eks-cluster-role"  
 }
 
-# Create EKS cluster
+
 resource "aws_eks_cluster" "web_app_cluster" {
   name     = "web-app-cluster"
-  role_arn = data.aws_iam_role.cluster_role.arn  # Use the ARN of the existing role
+  role_arn = data.aws_iam_role.cluster_role.arn  
 
   vpc_config {
     subnet_ids = [
@@ -40,12 +40,12 @@ resource "aws_eks_cluster" "web_app_cluster" {
   }
 }
 
-# Create Route Tables (optional, to route traffic)
+
 resource "aws_route_table" "main_route_table" {
   vpc_id = aws_vpc.main_vpc.id
 }
 
-# Associate subnets with the route table
+
 resource "aws_route_table_association" "subnet1_association" {
   subnet_id      = aws_subnet.subnet1.id
   route_table_id = aws_route_table.main_route_table.id
